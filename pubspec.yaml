@@ -1,0 +1,71 @@
+name: tafiya
+description: Nigeria's first group & solo tour marketplace. Travel smarter.
+publish_to: 'none'
+version: 1.0.0+1
+
+# Pinned to versions compatible with Flutter 3.19.6 / Dart 3.3.4 on macOS 13.
+# When you eventually move to a newer Flutter, you can bump these.
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.5.1
+
+  # Routing
+  go_router: ^13.2.4
+
+  # Backend - Supabase (disabled until Dart 3.4+)
+  # supabase_flutter: ^2.5.6
+
+  # Networking
+  dio: ^5.4.3+1
+
+  # Local Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  shared_preferences: ^2.2.3
+
+  # UI / Design
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.10+1
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  smooth_page_indicator: ^1.1.0
+
+  # Forms / Inputs
+  pin_code_fields: ^8.0.1
+  intl_phone_field: ^3.2.0
+
+  # Maps & Location
+  google_maps_flutter: ^2.6.1
+  geolocator: ^11.1.0
+
+  # Utilities
+  intl: ^0.18.1
+  url_launcher: ^6.2.6
+  share_plus: ^7.2.2
+  image_picker: ^1.1.1
+  permission_handler: ^11.3.1
+  connectivity_plus: ^6.0.3
+
+  # Notifications
+  firebase_core: ^2.31.0
+  firebase_messaging: ^14.9.4
+  flutter_local_notifications: ^17.1.2
+
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.2
+
+flutter:
+  uses-material-design: true
