@@ -22,10 +22,10 @@ class HomeShell extends ConsumerWidget {
       route: AppRoutes.discover,
     ),
     _TabItem(
-      icon: Icons.savings_outlined,
-      activeIcon: Icons.savings_rounded,
-      label: 'Savings',
-      route: AppRoutes.savings,
+      icon: Icons.account_balance_wallet_outlined,
+      activeIcon: Icons.account_balance_wallet_rounded,
+      label: 'Wallet',
+      route: AppRoutes.wallet,
     ),
     _TabItem(
       icon: Icons.luggage_outlined,

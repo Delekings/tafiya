@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/corporate/presentation/corporate_inquiry_screen.dart';
+import '../../features/wallet/presentation/wallet_screen.dart';
 
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
@@ -13,6 +14,9 @@ import '../../features/home/presentation/home_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/savings_wallet/presentation/savings_wallet_screen.dart';
+import '../../features/wallet/presentation/buy_points_screen.dart';
+import '../../features/wallet/presentation/send_points_screen.dart';
+import '../../features/wallet/presentation/earn_points_screen.dart';
 import '../../features/savings_wallet/presentation/create_savings_plan_screen.dart';
 import '../../features/tour_details/presentation/tour_details_screen.dart';
 import '../../features/tour_discovery/presentation/discover_screen.dart';
@@ -20,6 +24,7 @@ import '../../features/guide_network/presentation/guide_enrollment_screen.dart';
 import '../../features/operator_dashboard/presentation/become_operator_screen.dart';
 import '../../features/operator_dashboard/presentation/operator_dashboard_screen.dart';
 import '../../features/operator_dashboard/presentation/create_tour_screen.dart';
+
 
 class AppRoutes {
   AppRoutes._();
@@ -29,11 +34,15 @@ class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String corporateInquiry = '/corporate-inquiry';
+  static const String wallet = '/wallet';
+  static const String buyPoints = '/wallet/buy';
+  static const String sendPoints = '/wallet/send';
+  static const String earnPoints = '/wallet/earn';
+  static const String savingsDetail = '/wallet/savings';
 
   // Main shell routes
   static const String home = '/home';
   static const String discover = '/discover';
-  static const String savings = '/savings';
   static const String trips = '/trips';
   static const String profile = '/profile';
 
@@ -92,21 +101,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 initialCategory: state.uri.queryParameters['category'],
               ),
             ),
-
           ),
           GoRoute(
-            path: AppRoutes.createTour,
-            builder: (_, __) => const CreateTourScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.corporateInquiry,
-            builder: (_, __) => const CorporateInquiryScreen(),
-          ),
-
-          GoRoute(
-            path: AppRoutes.savings,
+            path: AppRoutes.wallet,
             pageBuilder: (_, __) => const NoTransitionPage(
-              child: SavingsWalletScreen(),
+              child: WalletScreen(),
             ),
           ),
           GoRoute(
@@ -124,7 +123,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
-      // Sub routes (full-screen, outside shell)
+      // Full-screen routes (outside shell, no bottom nav)
       GoRoute(
         path: AppRoutes.tourDetails,
         builder: (_, state) => TourDetailsScreen(
@@ -163,8 +162,27 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.createTour,
         builder: (_, __) => const CreateTourScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.corporateInquiry,
+        builder: (_, __) => const CorporateInquiryScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.buyPoints,
+        builder: (_, __) => const BuyPointsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.sendPoints,
+        builder: (_, __) => const SendPointsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.earnPoints,
+        builder: (_, __) => const EarnPointsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.savingsDetail,
+        builder: (_, __) => const SavingsWalletScreen(),
+      ),
     ],
-
     errorBuilder: (context, state) => Scaffold(
       body: Center(child: Text('Page not found: ${state.error}')),
     ),

@@ -166,7 +166,7 @@ class HomeScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.all(AppSizes.lg),
                 child: _SavingsBanner(
-                  onTap: () => context.go(AppRoutes.savings),
+                  onTap: () => context.go(AppRoutes.wallet),
                 ),
               ),
             ),
