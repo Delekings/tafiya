@@ -71,9 +71,9 @@ class Tour {
       currency: json['currency'] as String? ?? 'NGN',
       startDate: DateTime.parse(json['start_date'] as String),
       endDate: DateTime.parse(json['end_date'] as String),
-      durationDays: json['duration_days'] as int,
-      totalSlots: json['total_slots'] as int,
-      slotsTaken: json['slots_taken'] as int? ?? 0,
+      durationDays: (json['duration_days'] as num).toInt(),
+      totalSlots: (json['total_slots'] as num).toInt(),
+      slotsTaken: (json['slots_taken'] as num?)?.toInt() ?? 0,
       categories: List<String>.from(json['categories'] ?? []),
       isInternational: json['is_international'] as bool? ?? false,
       operatorId: json['operator_id'] as String,
@@ -81,7 +81,7 @@ class Tour {
       operatorAvatar: json['operator_avatar'] as String? ?? '',
       operatorVerified: json['operator_verified'] as bool? ?? false,
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      reviewCount: json['review_count'] as int? ?? 0,
+      reviewCount: (json['review_count'] as num?)?.toInt() ?? 0,
       highlights: List<String>.from(json['highlights'] ?? []),
       itinerary: (json['itinerary'] as List? ?? [])
           .map((e) => ItineraryDay.fromJson(e as Map<String, dynamic>))

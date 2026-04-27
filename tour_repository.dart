@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' hide Provider;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/models.dart';
 import '../services/mock_data.dart';
 import '../services/supabase_service.dart';
@@ -87,7 +87,7 @@ final trendingToursProvider = FutureProvider<List<Tour>>((ref) async {
 });
 
 final tourByIdProvider =
-FutureProvider.family<Tour?, String>((ref, id) async {
+    FutureProvider.family<Tour?, String>((ref, id) async {
   final repo = ref.watch(tourRepositoryProvider);
   return repo.getTourById(id);
 });

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/router/app_router.dart';
 import '../../../data/services/supabase_service.dart';
+import '../../../data/repositories/operator_repository.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -11,7 +12,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
-    final fullName = user?.userMetadata['full_name'] as String? ?? 'Guest';
+    final fullName = user?.userMetadata?['full_name'] as String? ?? 'Guest';
     final email = user?.email ?? 'Not signed in';
 
     return SafeArea(
@@ -143,7 +144,17 @@ class ProfileScreen extends ConsumerWidget {
                 _MenuItem(
                   icon: Icons.business_center_outlined,
                   label: 'List your tours (Operator)',
-                  onTap: () {},
+                  onTap: () async {
+                    final operator = await ref
+                        .read(operatorRepositoryProvider)
+                        .getMyOperator();
+                    if (!context.mounted) return;
+                    if (operator != null) {
+                      context.push(AppRoutes.operatorDashboard);
+                    } else {
+                      context.push(AppRoutes.becomeOperator);
+                    }
+                  },
                 ),
                 _MenuItem(
                   icon: Icons.card_giftcard_rounded,
@@ -171,7 +182,6 @@ class ProfileScreen extends ConsumerWidget {
                   isDestructive: true,
                   onTap: () async {
                     await ref.read(supabaseClientProvider).auth.signOut();
-                    ref.read(currentUserProvider.notifier).state = null;
                     if (context.mounted) context.go(AppRoutes.login);
                   },
                 ),

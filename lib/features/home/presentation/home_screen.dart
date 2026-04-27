@@ -18,7 +18,7 @@ class HomeScreen extends ConsumerWidget {
     final trending = ref.watch(trendingToursProvider);
 
     final firstName =
-        (user?.userMetadata['full_name'] as String?)?.split(' ').first ??
+        (user?.userMetadata?['full_name'] as String?)?.split(' ').first ??
             'Traveler';
 
     return SafeArea(
@@ -119,36 +119,42 @@ class HomeScreen extends ConsumerWidget {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
-                  children: const [
+                  children: [
                     _CategoryChip(
                       icon: '🏖️',
                       label: 'Beach',
-                      bg: Color(0xFFFEF3E7),
+                      bg: const Color(0xFFFEF3E7),
+                      onTap: () => context.push('/discover?category=beach'),
                     ),
                     _CategoryChip(
                       icon: '⛰️',
                       label: 'Adventure',
-                      bg: Color(0xFFE7F0E9),
+                      bg: const Color(0xFFE7F0E9),
+                      onTap: () => context.push('/discover?category=adventure'),
                     ),
                     _CategoryChip(
                       icon: '🏛️',
                       label: 'Cultural',
-                      bg: Color(0xFFF5EAE1),
+                      bg: const Color(0xFFF5EAE1),
+                      onTap: () => context.push('/discover?category=cultural'),
                     ),
                     _CategoryChip(
                       icon: '🎉',
                       label: 'Festivals',
-                      bg: Color(0xFFFCE7E7),
+                      bg: const Color(0xFFFCE7E7),
+                      onTap: () => context.push('/discover?category=festivals'),
                     ),
                     _CategoryChip(
                       icon: '💼',
                       label: 'Corporate',
-                      bg: Color(0xFFE7EAF5),
+                      bg: const Color(0xFFE7EAF5),
+                      onTap: () => context.push('/corporate-inquiry'),
                     ),
                     _CategoryChip(
                       icon: '💕',
                       label: 'Honeymoon',
-                      bg: Color(0xFFFCE7F0),
+                      bg: const Color(0xFFFCE7F0),
+                      onTap: () => context.push('/discover?category=honeymoon'),
                     ),
                   ],
                 ),
@@ -313,43 +319,48 @@ class _CategoryChip extends StatelessWidget {
   final String icon;
   final String label;
   final Color bg;
+  final VoidCallback? onTap;
   const _CategoryChip({
     required this.icon,
     required this.label,
     required this.bg,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: AppSizes.md),
-      child: Column(
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: bg,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Center(
+                child: Text(icon, style: const TextStyle(fontSize: 28)),
+              ),
             ),
-            child: Center(
-              child: Text(icon, style: const TextStyle(fontSize: 28)),
+            const SizedBox(height: AppSizes.sm),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-          const SizedBox(height: AppSizes.sm),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
-
 class _SavingsBanner extends StatelessWidget {
   final VoidCallback onTap;
   const _SavingsBanner({required this.onTap});

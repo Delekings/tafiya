@@ -79,6 +79,6 @@ class SupabaseConfig {
   SupabaseConfig._();
 
   // TODO: Replace with your actual Supabase project credentials
-  static const String url = 'YOUR_SUPABASE_URL';
-  static const String anonKey = 'YOUR_SUPABASE_ANON_KEY';
+  static const String url = 'https://jpzptomoczusswmvcavi.supabase.co';
+  static const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwenB0b21vY3p1c3N3bXZjYXZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzgzMzQsImV4cCI6MjA5MjcxNDMzNH0.fJJFLwjXL-xg9aqLdKUQiJwWKafDc7Ai86YZOtJCa0U';
 }

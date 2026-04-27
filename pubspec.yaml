@@ -21,8 +21,8 @@ dependencies:
   # Routing
   go_router: ^13.2.4
 
-  # Backend - Supabase (disabled until Dart 3.4+)
-  # supabase_flutter: ^2.5.6
+  # Backend - Supabase (v1.x for Dart 3.3 web compatibility)
+  supabase_flutter: ^1.10.25
 
   # Networking
   dio: ^5.4.3+1

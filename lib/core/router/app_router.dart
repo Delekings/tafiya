@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/corporate/presentation/corporate_inquiry_screen.dart';
 
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
@@ -16,6 +17,9 @@ import '../../features/savings_wallet/presentation/create_savings_plan_screen.da
 import '../../features/tour_details/presentation/tour_details_screen.dart';
 import '../../features/tour_discovery/presentation/discover_screen.dart';
 import '../../features/guide_network/presentation/guide_enrollment_screen.dart';
+import '../../features/operator_dashboard/presentation/become_operator_screen.dart';
+import '../../features/operator_dashboard/presentation/operator_dashboard_screen.dart';
+import '../../features/operator_dashboard/presentation/create_tour_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -24,6 +28,7 @@ class AppRoutes {
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String register = '/register';
+  static const String corporateInquiry = '/corporate-inquiry';
 
   // Main shell routes
   static const String home = '/home';
@@ -38,6 +43,9 @@ class AppRoutes {
   static const String groupChat = '/chat/:bookingId';
   static const String createSavingsPlan = '/savings/create';
   static const String guideEnrollment = '/become-a-guide';
+  static const String becomeOperator = '/become-an-operator';
+  static const String operatorDashboard = '/operator';
+  static const String createTour = '/operator/tours/new';
 }
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -79,10 +87,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: AppRoutes.discover,
-            pageBuilder: (_, __) => const NoTransitionPage(
-              child: DiscoverScreen(),
+            pageBuilder: (_, state) => NoTransitionPage(
+              child: DiscoverScreen(
+                initialCategory: state.uri.queryParameters['category'],
+              ),
             ),
+
           ),
+          GoRoute(
+            path: AppRoutes.createTour,
+            builder: (_, __) => const CreateTourScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.corporateInquiry,
+            builder: (_, __) => const CorporateInquiryScreen(),
+          ),
+
           GoRoute(
             path: AppRoutes.savings,
             pageBuilder: (_, __) => const NoTransitionPage(
@@ -131,7 +151,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.guideEnrollment,
         builder: (_, __) => const GuideEnrollmentScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.becomeOperator,
+        builder: (_, __) => const BecomeOperatorScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.operatorDashboard,
+        builder: (_, __) => const OperatorDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.createTour,
+        builder: (_, __) => const CreateTourScreen(),
+      ),
     ],
+
     errorBuilder: (context, state) => Scaffold(
       body: Center(child: Text('Page not found: ${state.error}')),
     ),
