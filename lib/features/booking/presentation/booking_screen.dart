@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../data/models/models.dart';
 import '../../../data/repositories/tour_repository.dart';
+import '../../../data/repositories/booking_repository.dart';
+import '../../../data/repositories/points_repository.dart';
+import '../../../core/router/app_router.dart';
 
 class BookingScreen extends ConsumerStatefulWidget {
   final String tourId;
@@ -15,9 +18,64 @@ class BookingScreen extends ConsumerStatefulWidget {
 }
 
 class _BookingScreenState extends ConsumerState<BookingScreen> {
-  String _paymentPlan = 'full'; // 'full' or 'installment'
+  String _paymentPlan = 'full';
   int _installmentMonths = 3;
   int _travelers = 1;
+  bool _confirming = false;
+
+  Future<void> _confirmBooking(
+      dynamic tour,
+      double total,
+      double firstPayment,
+      ) async {
+    setState(() => _confirming = true);
+    try {
+      final bookingId =
+      await ref.read(bookingRepositoryProvider).createBooking(
+        tourId: tour.id,
+        travelers: _travelers,
+        totalAmount: total,
+        paymentPlan: _paymentPlan,
+        installmentMonths:
+        _paymentPlan == 'installment' ? _installmentMonths : 0,
+        amountPaid: firstPayment,
+        pointsUsed: 0,
+      );
+
+      ref.invalidate(pointBalanceProvider);
+      ref.invalidate(pointTransactionsProvider);
+      ref.invalidate(myBookingsProvider);
+      ref.invalidate(allToursProvider);
+      ref.invalidate(featuredToursProvider);
+      ref.invalidate(trendingToursProvider);
+      ref.invalidate(tourByIdProvider(tour.id));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              tour.currency == 'NGN'
+                  ? 'Booking confirmed! 🎉 Cashback added to your wallet.'
+                  : 'Booking confirmed! 🎉',
+            ),
+            backgroundColor: AppColors.success,
+          ),
+        );
+        context.go(AppRoutes.home);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Booking failed: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _confirming = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -319,18 +377,22 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Redirecting to Paystack...'),
-                      backgroundColor: AppColors.primary,
-                    ),
-                  );
-                },
+                onPressed: _confirming
+                    ? null
+                    : () => _confirmBooking(tour, total, firstPayment),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(140, 56),
                 ),
-                child: const Text('Confirm & Pay'),
+                child: _confirming
+                    ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+                    : const Text('Confirm & Pay'),
               ),
             ],
           ),

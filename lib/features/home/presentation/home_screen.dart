@@ -7,12 +7,61 @@ import '../../../core/router/app_router.dart';
 import '../../../data/repositories/tour_repository.dart';
 import '../../../data/services/supabase_service.dart';
 import '../../../shared/widgets/tour_card.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+const _greetings = [
+  'Sannu',         // Hausa
+  'Bawo ni',       // Yoruba
+  'Kedu',          // Igbo
+  'Habari',        // Swahili
+  'Sawubona',      // Zulu
+  'Akwaaba',       // Twi
+  'Mbote',         // Lingala
+  'Salaam',        // Arabic / Northern Nigeria
+  'Mhoro',         // Shona
+  'Jambo',         // Swahili (informal)
+];
+
+const _categories = [
+  {
+    'value': 'beach',
+    'label': 'Beach',
+    'image': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80',
+  },
+  {
+    'value': 'adventure',
+    'label': 'Adventure',
+    'image': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400&q=80',
+  },
+  {
+    'value': 'cultural',
+    'label': 'Cultural',
+    'image': 'https://images.unsplash.com/photo-1604147706283-d7119b5b822c?w=400&q=80',
+  },
+  {
+    'value': 'festivals',
+    'label': 'Festivals',
+    'image': 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80',
+  },
+  {
+    'value': 'corporate',
+    'label': 'Corporate',
+    'image': 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=400&q=80',
+  },
+  {
+    'value': 'honeymoon',
+    'label': 'Honeymoon',
+    'image': 'https://images.unsplash.com/photo-1542401886-65d6c61db217?w=400&q=80',
+  },
+];
+
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final greeting = (_greetings.toList()..shuffle()).first;
     final user = ref.watch(currentUserProvider);
     final featured = ref.watch(featuredToursProvider);
     final trending = ref.watch(trendingToursProvider);
@@ -46,8 +95,10 @@ class HomeScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Sannu, $firstName 👋',
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            '$greeting, $firstName 👋',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                           ),
                           const SizedBox(height: 2),
                           Text(
@@ -110,56 +161,38 @@ class HomeScreen extends ConsumerWidget {
             ),
 
             // Categories
-            const SliverToBoxAdapter(
-              child: SizedBox(height: AppSizes.lg),
-            ),
+            // const SliverToBoxAdapter(
+            //   child: SizedBox(height: AppSizes.lg),
+            // ),
+
+
             SliverToBoxAdapter(
-              child: SizedBox(
-                height: 110,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
-                  children: [
-                    _CategoryChip(
-                      icon: '🏖️',
-                      label: 'Beach',
-                      bg: const Color(0xFFFEF3E7),
-                      onTap: () => context.push('/discover?category=beach'),
-                    ),
-                    _CategoryChip(
-                      icon: '⛰️',
-                      label: 'Adventure',
-                      bg: const Color(0xFFE7F0E9),
-                      onTap: () => context.push('/discover?category=adventure'),
-                    ),
-                    _CategoryChip(
-                      icon: '🏛️',
-                      label: 'Cultural',
-                      bg: const Color(0xFFF5EAE1),
-                      onTap: () => context.push('/discover?category=cultural'),
-                    ),
-                    _CategoryChip(
-                      icon: '🎉',
-                      label: 'Festivals',
-                      bg: const Color(0xFFFCE7E7),
-                      onTap: () => context.push('/discover?category=festivals'),
-                    ),
-                    _CategoryChip(
-                      icon: '💼',
-                      label: 'Corporate',
-                      bg: const Color(0xFFE7EAF5),
-                      onTap: () => context.push('/corporate-inquiry'),
-                    ),
-                    _CategoryChip(
-                      icon: '💕',
-                      label: 'Honeymoon',
-                      bg: const Color(0xFFFCE7F0),
-                      onTap: () => context.push('/discover?category=honeymoon'),
-                    ),
-                  ],
+              child: Padding(
+                padding: const EdgeInsets.only(top: AppSizes.lg),
+                child: SizedBox(
+                  height: 110,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: AppSizes.lg),
+                    itemCount: _categories.length,
+                    separatorBuilder: (_, __) =>
+                    const SizedBox(width: AppSizes.md),
+                    itemBuilder: (context, index) {
+                      final cat = _categories[index];
+                      return _CategoryCircle(
+                        label: cat['label']!,
+                        imageUrl: cat['image']!,
+                        onTap: () =>
+                            context.go('/discover?category=${cat['value']}'),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
+
+
 
             // Savings CTA banner
             SliverToBoxAdapter(
@@ -314,7 +347,72 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 }
+class _CategoryCircle extends StatelessWidget {
+  final String label;
+  final String imageUrl;
+  final VoidCallback onTap;
 
+  const _CategoryCircle({
+    required this.label,
+    required this.imageUrl,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(50),
+      child: SizedBox(
+        width: 78,
+        child: Column(
+          children: [
+            Container(
+              width: 76,
+              height: 76,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.divider,
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(
+                    color: AppColors.surfaceVariant,
+                  ),
+                  errorWidget: (_, __, ___) => Container(
+                    color: AppColors.surfaceVariant,
+                    child: const Icon(Icons.image_not_supported_outlined,
+                        color: AppColors.textTertiary, size: 24),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 class _CategoryChip extends StatelessWidget {
   final String icon;
   final String label;

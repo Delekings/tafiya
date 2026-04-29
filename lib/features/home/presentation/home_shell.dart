@@ -30,8 +30,8 @@ class HomeShell extends ConsumerWidget {
     _TabItem(
       icon: Icons.luggage_outlined,
       activeIcon: Icons.luggage_rounded,
-      label: 'Trips',
-      route: AppRoutes.trips,
+      label: 'Tales',
+      route: AppRoutes.tales,
     ),
     _TabItem(
       icon: Icons.person_outline,

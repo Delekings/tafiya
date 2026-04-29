@@ -24,6 +24,8 @@ import '../../features/guide_network/presentation/guide_enrollment_screen.dart';
 import '../../features/operator_dashboard/presentation/become_operator_screen.dart';
 import '../../features/operator_dashboard/presentation/operator_dashboard_screen.dart';
 import '../../features/operator_dashboard/presentation/create_tour_screen.dart';
+import '../../features/tales/presentation/tales_screen.dart';
+import '../../features/tales/presentation/article_reader_screen.dart';
 
 
 class AppRoutes {
@@ -39,11 +41,12 @@ class AppRoutes {
   static const String sendPoints = '/wallet/send';
   static const String earnPoints = '/wallet/earn';
   static const String savingsDetail = '/wallet/savings';
+  static const String tales = '/tales';
+  static const String articleReader = '/tales/:slug';
 
   // Main shell routes
   static const String home = '/home';
   static const String discover = '/discover';
-  static const String trips = '/trips';
   static const String profile = '/profile';
 
   // Sub routes
@@ -109,9 +112,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ),
           ),
           GoRoute(
-            path: AppRoutes.trips,
+            path: AppRoutes.tales,
             pageBuilder: (_, __) => const NoTransitionPage(
-              child: _TripsPlaceholder(),
+              child: TalesScreen(),
             ),
           ),
           GoRoute(
@@ -182,21 +185,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.savingsDetail,
         builder: (_, __) => const SavingsWalletScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.articleReader,
+        builder: (_, state) => ArticleReaderScreen(
+          slug: state.pathParameters['slug'] ?? '',
+        ),
+      ),
     ],
     errorBuilder: (context, state) => Scaffold(
       body: Center(child: Text('Page not found: ${state.error}')),
     ),
   );
 });
-
-// Temporary placeholder
-class _TripsPlaceholder extends StatelessWidget {
-  const _TripsPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('My Trips — Coming soon')),
-    );
-  }
-}

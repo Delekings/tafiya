@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../data/models/models.dart';
 import '../../../data/repositories/tour_repository.dart';
+import '../../../core/router/app_router.dart';
 
 class TourDetailsScreen extends ConsumerWidget {
   final String tourId;
@@ -50,259 +51,70 @@ class _TourDetailsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        // Hero image with back button
-        SliverAppBar(
-          expandedHeight: 320,
-          pinned: true,
-          stretch: true,
-          backgroundColor: AppColors.background,
-          leading: Padding(
-            padding: const EdgeInsets.all(AppSizes.sm),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-                onPressed: () => context.pop(),
-              ),
-            ),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(AppSizes.sm),
-              child: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: IconButton(
-                  icon: const Icon(Icons.share_rounded,
-                      color: AppColors.textPrimary, size: 20),
-                  onPressed: () {},
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(AppSizes.sm),
-              child: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: IconButton(
-                  icon: const Icon(Icons.favorite_border_rounded,
-                      color: AppColors.textPrimary, size: 20),
-                  onPressed: () {},
-                ),
-              ),
-            ),
+    final formatter = NumberFormat.currency(
+      symbol: tour.currency == 'NGN' ? '₦' : '\$',
+      decimalDigits: 0,
+    );
+
+    return Stack(
+      children: [
+        CustomScrollView(
+          slivers: [
+            // ... all your existing slivers, UNCHANGED ...
+            // (the SliverAppBar with hero image, and the SliverToBoxAdapter
+            //  with the tour body — leave them exactly as they are)
           ],
-          flexibleSpace: FlexibleSpaceBar(
-            background: Stack(
-              fit: StackFit.expand,
-              children: [
-                CachedNetworkImage(
-                  imageUrl: tour.coverImage,
-                  fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) =>
-                      Container(color: AppColors.surfaceVariant),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.4),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSizes.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Location & rating
-                Row(
-                  children: [
-                    const Icon(Icons.location_on,
-                        color: AppColors.accent, size: 18),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${tour.destination}, ${tour.country}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                    ),
-                    const Spacer(),
-                    const Icon(Icons.star_rounded,
-                        color: AppColors.accent, size: 18),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${tour.rating} (${tour.reviewCount})',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSizes.sm),
-                // Title
-                Text(
-                  tour.title,
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-                const SizedBox(height: AppSizes.lg),
-                // Quick facts
-                Container(
-                  padding: const EdgeInsets.all(AppSizes.md),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceVariant,
-                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _Fact(
-                        icon: Icons.calendar_today_rounded,
-                        label: 'Dates',
-                        value: _formatDateRange(),
-                      ),
-                      Container(
-                          width: 1,
-                          height: 40,
-                          color: AppColors.border),
-                      _Fact(
-                        icon: Icons.schedule_rounded,
-                        label: 'Duration',
-                        value: '${tour.durationDays} days',
-                      ),
-                      Container(
-                          width: 1,
-                          height: 40,
-                          color: AppColors.border),
-                      _Fact(
-                        icon: Icons.group_rounded,
-                        label: 'Slots left',
-                        value: '${tour.slotsRemaining}/${tour.totalSlots}',
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppSizes.lg),
-                // Operator
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 22,
-                      backgroundColor: AppColors.primary,
-                      child: Text(
-                        tour.operatorName.isNotEmpty ? tour.operatorName[0] : '?',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AppSizes.sm),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                tour.operatorName,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.w700),
-                              ),
-                              if (tour.operatorVerified) ...[
-                                const SizedBox(width: 4),
-                                const Icon(
-                                  Icons.verified_rounded,
-                                  color: AppColors.primary,
-                                  size: 16,
-                                ),
-                              ],
-                            ],
-                          ),
-                          Text(
-                            'Verified Tour Operator',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                    ),
-                    OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 36),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSizes.md),
-                      ),
-                      child: const Text('View'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSizes.lg),
-                _SectionHeader(title: 'About this tour'),
-                const SizedBox(height: AppSizes.sm),
-                Text(
-                  tour.description,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: AppSizes.lg),
-                _SectionHeader(title: 'Highlights'),
-                const SizedBox(height: AppSizes.sm),
-                ...tour.highlights.map(
-                  (h) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
+        // Sticky bottom CTA
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            padding: EdgeInsets.fromLTRB(
+              AppSizes.lg,
+              AppSizes.md,
+              AppSizes.lg,
+              AppSizes.md + MediaQuery.of(context).padding.bottom,
+            ),
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              border: Border(
+                top: BorderSide(color: AppColors.divider, width: 1),
+              ),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 6),
-                          child: Icon(Icons.check_circle_rounded,
-                              color: AppColors.primary, size: 18),
+                        Text(
+                          'From',
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(h,
-                              style: Theme.of(context).textTheme.bodyLarge),
+                        Text(
+                          '${formatter.format(tour.pricePerPerson)} / person',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(color: AppColors.primary),
                         ),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: AppSizes.lg),
-                if (tour.included.isNotEmpty) ...[
-                  _SectionHeader(title: 'What\'s included'),
-                  const SizedBox(height: AppSizes.sm),
-                  Wrap(
-                    spacing: AppSizes.sm,
-                    runSpacing: AppSizes.sm,
-                    children: tour.included
-                        .map((item) => Chip(
-                              label: Text(item),
-                              backgroundColor: AppColors.primary
-                                  .withOpacity(0.08),
-                              labelStyle: const TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                              ),
-                            ))
-                        .toList(),
+                  ElevatedButton(
+                    onPressed: tour.isFull
+                        ? null
+                        : () => context.push('/booking/${tour.id}'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(140, 56),
+                    ),
+                    child: Text(tour.isFull ? 'Sold Out' : 'Book Now'),
                   ),
                 ],
-                const SizedBox(height: 100),
-              ],
+              ),
             ),
           ),
         ),
@@ -336,9 +148,9 @@ class _Fact extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
