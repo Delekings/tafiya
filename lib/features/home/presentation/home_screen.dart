@@ -170,7 +170,7 @@ class HomeScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.only(top: AppSizes.lg),
                 child: SizedBox(
-                  height: 110,
+                  height: 130,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding:
@@ -357,15 +357,15 @@ class _CategoryCircle extends StatelessWidget {
     required this.imageUrl,
     required this.onTap,
   });
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(50),
       child: SizedBox(
-        width: 78,
+        width: 92,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 76,
@@ -402,7 +402,10 @@ class _CategoryCircle extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
               ),

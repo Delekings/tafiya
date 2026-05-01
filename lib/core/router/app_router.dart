@@ -26,6 +26,11 @@ import '../../features/operator_dashboard/presentation/operator_dashboard_screen
 import '../../features/operator_dashboard/presentation/create_tour_screen.dart';
 import '../../features/tales/presentation/tales_screen.dart';
 import '../../features/tales/presentation/article_reader_screen.dart';
+import '../../features/profile/presentation/edit_profile_screen.dart';
+import '../../features/profile/presentation/my_trips_screen.dart';
+import '../../features/profile/presentation/help_screen.dart';
+import '../../features/profile/presentation/about_screen.dart';
+import '../../features/wallet/presentation/buyback_request_screen.dart';
 
 
 class AppRoutes {
@@ -43,6 +48,11 @@ class AppRoutes {
   static const String savingsDetail = '/wallet/savings';
   static const String tales = '/tales';
   static const String articleReader = '/tales/:slug';
+  static const String editProfile = '/profile/edit';
+  static const String myTrips = '/profile/trips';
+  static const String buybackRequest = '/wallet/buyback';
+  static const String help = '/help';
+  static const String about = '/about';
 
   // Main shell routes
   static const String home = '/home';
@@ -190,6 +200,26 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => ArticleReaderScreen(
           slug: state.pathParameters['slug'] ?? '',
         ),
+      ),
+      GoRoute(
+        path: AppRoutes.editProfile,
+        builder: (_, __) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.myTrips,
+        builder: (_, __) => const MyTripsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.buybackRequest,
+        builder: (_, __) => const BuybackRequestScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.help,
+        builder: (_, __) => const HelpScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.about,
+        builder: (_, __) => const AboutScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

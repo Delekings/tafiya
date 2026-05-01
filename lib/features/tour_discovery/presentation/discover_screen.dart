@@ -89,7 +89,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
               children: [
                 Row(
                   children: [
-                    if (widget.initialCategory != null)
+                    if (widget.initialCategory != null && context.canPop())
                       Padding(
                         padding: const EdgeInsets.only(right: AppSizes.sm),
                         child: IconButton(
