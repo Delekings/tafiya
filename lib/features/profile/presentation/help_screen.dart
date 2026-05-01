@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/router/app_router.dart';
 
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});
@@ -69,6 +70,27 @@ class HelpScreen extends StatelessWidget {
             onTap: _openWhatsapp,
           ),
 
+
+          const SizedBox(height: AppSizes.xl),
+          Text(
+            'Legal',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: AppSizes.sm),
+          _ContactTile(
+            icon: Icons.privacy_tip_outlined,
+            color: AppColors.primary,
+            title: 'Privacy Policy',
+            subtitle: 'How we handle your data',
+            onTap: () => context.go(AppRoutes.privacyPolicy),
+          ),
+          _ContactTile(
+            icon: Icons.gavel_outlined,
+            color: AppColors.accent,
+            title: 'Terms of Service',
+            subtitle: 'The rules of using Tafiya',
+            onTap: () => context.go(AppRoutes.termsOfService),
+          ),
           const SizedBox(height: AppSizes.xl),
 
           Text(

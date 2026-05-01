@@ -31,6 +31,8 @@ import '../../features/profile/presentation/my_trips_screen.dart';
 import '../../features/profile/presentation/help_screen.dart';
 import '../../features/profile/presentation/about_screen.dart';
 import '../../features/wallet/presentation/buyback_request_screen.dart';
+import '../../data/legal/legal_documents.dart';
+import '../../features/legal/presentation/legal_document_screen.dart';
 
 
 class AppRoutes {
@@ -53,6 +55,9 @@ class AppRoutes {
   static const String buybackRequest = '/wallet/buyback';
   static const String help = '/help';
   static const String about = '/about';
+  static const String privacyPolicy = '/legal/privacy';
+  static const String termsOfService = '/legal/terms';
+
 
   // Main shell routes
   static const String home = '/home';
@@ -121,6 +126,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               child: WalletScreen(),
             ),
           ),
+
+
           GoRoute(
             path: AppRoutes.tales,
             pageBuilder: (_, __) => const NoTransitionPage(
@@ -131,6 +138,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.profile,
             pageBuilder: (_, __) => const NoTransitionPage(
               child: ProfileScreen(),
+            ),
+          ),
+          GoRoute(
+            path: AppRoutes.privacyPolicy,
+            builder: (_, __) => const LegalDocumentScreen(
+              title: kPrivacyPolicyTitle,
+              updatedLabel: kPrivacyPolicyUpdated,
+              body: kPrivacyPolicyBody,
+            ),
+          ),
+          GoRoute(
+            path: AppRoutes.termsOfService,
+            builder: (_, __) => const LegalDocumentScreen(
+              title: kTermsOfServiceTitle,
+              updatedLabel: kTermsOfServiceUpdated,
+              body: kTermsOfServiceBody,
             ),
           ),
         ],

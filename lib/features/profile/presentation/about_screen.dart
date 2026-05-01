@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/router/app_router.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -122,12 +123,12 @@ class AboutScreen extends StatelessWidget {
           _LinkTile(
             icon: Icons.privacy_tip_outlined,
             label: 'Privacy policy',
-            onTap: () => _openUrl('https://tafiya.app/privacy'),
+            onTap: () => context.go(AppRoutes.privacyPolicy),
           ),
           _LinkTile(
             icon: Icons.gavel_outlined,
             label: 'Terms of service',
-            onTap: () => _openUrl('https://tafiya.app/terms'),
+            onTap: () => context.go(AppRoutes.termsOfService),
           ),
 
           const SizedBox(height: AppSizes.xl),

@@ -8,10 +8,12 @@ import '../../../data/repositories/tour_repository.dart';
 import '../../../data/repositories/booking_repository.dart';
 import '../../../data/repositories/points_repository.dart';
 import '../../../core/router/app_router.dart';
+import '../../../data/repositories/points_repository.dart';
 
 class BookingScreen extends ConsumerStatefulWidget {
   final String tourId;
   const BookingScreen({super.key, required this.tourId});
+
 
   @override
   ConsumerState<BookingScreen> createState() => _BookingScreenState();
@@ -22,6 +24,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   int _installmentMonths = 3;
   int _travelers = 1;
   bool _confirming = false;
+  int _pointsUsed = 0;
+  bool _applyPoints = false;
 
   Future<void> _confirmBooking(
       dynamic tour,
@@ -39,7 +43,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
         installmentMonths:
         _paymentPlan == 'installment' ? _installmentMonths : 0,
         amountPaid: firstPayment,
-        pointsUsed: 0,
+        pointsUsed: _applyPoints ? _pointsUsed : 0,
       );
 
       ref.invalidate(pointBalanceProvider);
@@ -108,9 +112,14 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
       decimalDigits: 0,
     );
     final total = tour.pricePerPerson * _travelers;
-    final monthlyAmount =
-        _paymentPlan == 'installment' ? total / _installmentMonths : total;
-    final firstPayment = _paymentPlan == 'installment' ? total * 0.3 : total;
+    final pointsDiscount = (_applyPoints ? _pointsUsed : 0).toDouble();
+    final amountDue = total - pointsDiscount;
+    final monthlyAmount = _paymentPlan == 'installment'
+        ? amountDue / _installmentMonths
+        : amountDue;
+    final firstPayment = _paymentPlan == 'installment'
+        ? amountDue * 0.3
+        : amountDue;
 
     return Column(
       children: [
@@ -284,6 +293,147 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
 
                 const SizedBox(height: AppSizes.lg),
 
+                // Tafiya Points application
+                Consumer(
+                  builder: (context, ref, _) {
+                    final balanceAsync = ref.watch(pointBalanceProvider);
+                    return balanceAsync.maybeWhen(
+                      data: (balance) {
+                        if (balance.balance < 100) return const SizedBox();
+                        // Only show if NGN tour (cashback feature is NGN-only)
+                        if (tour.currency != 'NGN') return const SizedBox();
+
+                        final maxApplicable =
+                        balance.balance < total.toInt()
+                            ? balance.balance
+                            : total.toInt();
+                        final fmt = NumberFormat.decimalPattern();
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: AppSizes.lg),
+                          padding: const EdgeInsets.all(AppSizes.md),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius:
+                            BorderRadius.circular(AppSizes.radiusLg),
+                            border: Border.all(
+                              color: _applyPoints
+                                  ? AppColors.primary
+                                  : AppColors.divider,
+                              width: _applyPoints ? 1.5 : 1,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(Icons.stars_rounded,
+                                        color: AppColors.primary, size: 20),
+                                  ),
+                                  const SizedBox(width: AppSizes.sm),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Use Tafiya Points',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Balance: ${fmt.format(balance.balance)} pts',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Switch(
+                                    value: _applyPoints,
+                                    activeColor: AppColors.primary,
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _applyPoints = v;
+                                        if (v && _pointsUsed == 0) {
+                                          _pointsUsed = maxApplicable;
+                                        }
+                                        if (!v) _pointsUsed = 0;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              if (_applyPoints) ...[
+                                const SizedBox(height: AppSizes.md),
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Apply ${fmt.format(_pointsUsed)} pts',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                    Text(
+                                      '−₦${fmt.format(_pointsUsed)}',
+                                      style: const TextStyle(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Slider(
+                                  value: _pointsUsed.toDouble(),
+                                  min: 0,
+                                  max: maxApplicable.toDouble(),
+                                  divisions: maxApplicable > 0
+                                      ? (maxApplicable / 100).clamp(1, 100).toInt()
+                                      : null,
+                                  activeColor: AppColors.primary,
+                                  onChanged: (v) {
+                                    setState(
+                                            () => _pointsUsed = v.toInt());
+                                  },
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () => setState(
+                                              () => _pointsUsed = 0),
+                                      child: const Text('None'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => setState(
+                                              () => _pointsUsed = maxApplicable),
+                                      child: const Text('Use max'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ],
+                          ),
+                        );
+                      },
+                      orElse: () => const SizedBox(),
+                    );
+                  },
+                ),
+
                 // Price breakdown
                 Container(
                   padding: const EdgeInsets.all(AppSizes.md),
@@ -296,18 +446,25 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                     children: [
                       _PriceRow(
                         label:
-                            '${formatter.format(tour.pricePerPerson)} × $_travelers',
+                        '${formatter.format(tour.pricePerPerson)} × $_travelers',
                         value: formatter.format(total),
                       ),
                       const SizedBox(height: AppSizes.sm),
                       const _PriceRow(label: 'Service fee', value: 'Free'),
+                      if (_applyPoints && _pointsUsed > 0) ...[
+                        const SizedBox(height: AppSizes.sm),
+                        _PriceRow(
+                          label: 'Tafiya Points',
+                          value: '−${formatter.format(_pointsUsed)}',
+                        ),
+                      ],
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: AppSizes.sm),
                         child: Divider(),
                       ),
                       _PriceRow(
                         label: 'Total',
-                        value: formatter.format(total),
+                        value: formatter.format(amountDue),
                         emphasized: true,
                       ),
                     ],
